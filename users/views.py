@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-from API.users.serializers import UserSerializer, CollectionSerializer
+from API.users.serializers import CollectionSerializer
 from users.models import Collection, CustomUser
 
 
