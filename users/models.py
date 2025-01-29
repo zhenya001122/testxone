@@ -1,12 +1,35 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, UserManager, PermissionsMixin
 from django.db import models
 
-class CustomUser(models.Model):
+
+class NewUserManager(BaseUserManager):
+
+    def create_user(self, email, password=None):
+        """Create a new user profile"""
+        if not email:
+            raise ValueError('User must have an email address')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email,)
+        user.set_password(password)
+        user.save(using=self.db)
+
+        return user
+
+
+class CustomUser(AbstractBaseUser):
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=30)
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+
+    objects = NewUserManager()
+
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "email"
 
     def __str__(self):
-        return f'{self.email}'  # Строковое представление объекта
+        return self.email
 
 
 class Collection(models.Model):
