@@ -10,3 +10,4 @@ __pycache__/
 .venv/
 venv/
 register_api.py
+config.py
