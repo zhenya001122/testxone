@@ -33,7 +33,7 @@ class CustomUser(AbstractBaseUser):
 
 
 class Collection(models.Model):
-    name = models.CharField(max_length=20, verbose_name='коллекция')
+    name = models.CharField(max_length=20, default='website',)
     description = models.CharField(max_length=250, blank=True, verbose_name='Краткое описание')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
@@ -44,7 +44,7 @@ class Collection(models.Model):
         null=True,)
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
 
 
 class Linc(models.Model):
@@ -53,12 +53,13 @@ class Linc(models.Model):
     url = models.URLField(unique=True, verbose_name='URL')
     img = models.ImageField(upload_to='img/%Y/%m/%d', default=None,
                               blank=True, null=True, verbose_name='Изображение')
-    type = models.ManyToManyField(Collection)
+    type = models.ManyToManyField(Collection,
+        related_name="URL",)
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
     user = models.ForeignKey(CustomUser,
-         on_delete=models.CASCADE,
-         related_name="URL",
-         blank=True,
-         null=True, )
+        on_delete=models.CASCADE,
+        related_name="URL",
+        blank=True,
+        null=True, )
 

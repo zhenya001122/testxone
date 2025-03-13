@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'users',
     'rest_framework',
     'drf_spectacular',
+    'drf_spectacular_sidecar',
     'rest_framework.authtoken',
     'djoser',
 ]
@@ -121,9 +122,10 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
+    'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {
         'user_create': 'API.users.serializers.UserCreateSerializer',
+        'current_user': 'API.users.serializers.CustomUserSerializer',
 
     }
 }
@@ -164,4 +166,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API для регистрации, аутентификации, смены,сброса пароля, управления ссылками и коллекциями пользователей.',  # Описание API
     'VERSION': '1.0.0',                                           # Версия API
     'SERVE_INCLUDE_SCHEMA': False,                                # Отключение схемы в ответах API
+    'REDOC_DIST': 'SIDECAR',
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
 }
