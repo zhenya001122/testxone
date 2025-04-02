@@ -1,12 +1,15 @@
 from django.urls import path, include
-from .views import CollectionCreate, CollectionList, CollectionAPIDetailView, CollectionAPIList
+from .views import CollectionAPIDetailView, CollectionAPIList, LincAPIDetailView, LincAPIList
+
 
 urlpatterns = [
-    path('createcollection/', CollectionCreate.as_view(), name='create-collection'),
-    path('listcollection/', CollectionList.as_view(), name='list-collection'),
+    path('linccreatelist/', LincAPIList.as_view(), name='create-linc'),
+    path('lincdetail/<int:pk>/', LincAPIDetailView.as_view(), name='detail-linc'),
+    path('collectioncreatelist/', CollectionAPIList.as_view(),),
     path('collectiondetail/<int:pk>/', CollectionAPIDetailView.as_view(), name='detail-collection'),
-    path('collectionlist/', CollectionAPIList.as_view(),),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
 
 ]
+
+

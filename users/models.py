@@ -50,7 +50,7 @@ class Collection(models.Model):
 class Linc(models.Model):
     title = models.CharField(max_length=100, verbose_name='Заголовок')
     description = models.CharField(max_length=250, verbose_name='Краткое описание')
-    url = models.URLField(unique=True, verbose_name='URL')
+    url = models.URLField(verbose_name='URL')
     img = models.ImageField(upload_to='img/%Y/%m/%d', default=None,
                               blank=True, null=True, verbose_name='Изображение')
     type = models.ManyToManyField(Collection,
@@ -62,4 +62,7 @@ class Linc(models.Model):
         related_name="URL",
         blank=True,
         null=True, )
+
+    def __str__(self):
+        return self.url
 
