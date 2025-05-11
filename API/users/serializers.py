@@ -1,5 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.template.defaultfilters import title
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
+
+from parser.parser import parsing
 from users.models import Collection, CustomUser, Linc
 from djoser.serializers import UserCreateSerializer, UserSerializer
 
@@ -24,7 +28,7 @@ class LincSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Linc
-        fields = ('url', 'user')
+        fields = ('url', 'user', 'type', 'title', 'description', 'image', 'image_file')
 
 
 class UserCreateSerializer(UserCreateSerializer):

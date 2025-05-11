@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse, extend_schema_view
 from API.users.serializers import CollectionSerializer, LincSerializer
+from parser.parser import parsing
 from users.models import Collection, Linc, CustomUser
 
 
@@ -24,18 +25,16 @@ class LincAPIList(generics.ListCreateAPIView):
         }
     )
     def create(self, request, *args, **kwargs):
-        # написать логику сщздания объекта коллекции после парсинга
         queryset = Linc.objects.filter(user_id=request.user.id)
+        parser_dict = parsing(request.data["url"])
+        print(parser_dict)
         for i in queryset:
             if request.data['url'] == i.url:
                 return Response({'linc': f'ссылка {request.data['url']} уже существует'},
                                 status=status.HTTP_400_BAD_REQUEST)
-        collection = Collection.objects.get(name='music')
-        print(collection)
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data={**request.data.dict(), **parser_dict})
         serializer.is_valid(raise_exception=True)
-        linc = serializer.save()
-        linc.type.add(collection)
+        self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

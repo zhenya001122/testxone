@@ -1,6 +1,11 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import AbstractUser, UserManager, PermissionsMixin
+from django.core.files.base import ContentFile
 from django.db import models
+from django.core.files import File
+from urllib import request
+import os
+import requests
 
 
 class NewUserManager(BaseUserManager):
@@ -33,7 +38,7 @@ class CustomUser(AbstractBaseUser):
 
 
 class Collection(models.Model):
-    name = models.CharField(max_length=20, default='website',)
+    name = models.CharField(max_length=20)
     description = models.CharField(max_length=250, blank=True, verbose_name='Краткое описание')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
@@ -51,9 +56,10 @@ class Linc(models.Model):
     title = models.CharField(max_length=100, verbose_name='Заголовок')
     description = models.CharField(max_length=250, verbose_name='Краткое описание')
     url = models.URLField(verbose_name='URL')
-    img = models.ImageField(upload_to='img/%Y/%m/%d', default=None,
-                              blank=True, null=True, verbose_name='Изображение')
-    type = models.ManyToManyField(Collection,
+    image_file = models.ImageField(upload_to='images', default=None, blank=True, null=True)
+    image = models.URLField(blank=True, null=True)
+    type = models.CharField(max_length=100, default='website')
+    collection = models.ManyToManyField(Collection,
         related_name="URL",)
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
@@ -63,6 +69,16 @@ class Linc(models.Model):
         blank=True,
         null=True, )
 
+    def save(self, *args, **kwargs):
+        if self.image and not self.image_file:
+            p = requests.get(self.image)
+            filename = self.image.rsplit('/', 1)[1]
+            self.image_file.save(
+                filename,
+                ContentFile(p.content)
+            )
+            super(Linc, self).save()
+        super(Linc, self).save()
+
     def __str__(self):
         return self.url
-
