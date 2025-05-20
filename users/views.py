@@ -11,23 +11,31 @@ from parser.parser import parsing
 from users.models import Collection, Linc, CustomUser
 
 
+@extend_schema_view(
+    get=extend_schema(
+        summary="Получение информации о ссылках пользователя",
+        description="Возвращает список всех ссылок пользователя.",
+        responses={
+            200: OpenApiResponse(response=CollectionSerializer(many=True), description="Список ссылок пользователея")
+        }
+    ),
+    post=extend_schema(
+        summary="Добавление ссылки пользователя",
+        description="Добавляет ссылку пользователя. Сссылка не может повторяться",
+        request=CollectionSerializer,
+        responses={
+            201: OpenApiResponse(response=CollectionSerializer, description="Ссылка успешно добавлена"),
+            400: OpenApiResponse(description="Ошибки валидации")
+        }
+    ),
+)
 class LincAPIList(generics.ListCreateAPIView):
     queryset = Collection.objects.all()
     serializer_class = LincSerializer
     permission_classes = (IsAuthenticated,)
-    @extend_schema(
-        summary="Добавление ссылки",
-        description="Добавляет ссылку пользователя. Ссылка не может повторяться",
-        request=LincSerializer,
-        responses={
-            201: OpenApiResponse(response=LincSerializer, description="Ссылка успешно добавлена"),
-            400: OpenApiResponse(description="Ошибки валидации")
-        }
-    )
     def create(self, request, *args, **kwargs):
         queryset = Linc.objects.filter(user_id=request.user.id)
         parser_dict = parsing(request.data["url"])
-        print(parser_dict)
         for i in queryset:
             if request.data['url'] == i.url:
                 return Response({'linc': f'ссылка {request.data['url']} уже существует'},
@@ -39,6 +47,38 @@ class LincAPIList(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+@extend_schema_view(
+    get=extend_schema(
+        summary="Получение информации о ссылке пользователя",
+        description="Возвращает ссылку пользователя.",
+        responses={
+            200: OpenApiResponse(response=CollectionSerializer, description="Ссылка пользователея")
+        }
+    ),
+    put=extend_schema(
+        summary="Изменение ссылки пользователя",
+        description="Заменяет все поля объекта данными запроса.",
+        request=CollectionSerializer,
+        responses={
+            200: OpenApiResponse(response=CollectionSerializer, description="Ссылка успешно изменена"),
+        }
+    ),
+    patch=extend_schema(
+        summary="Частичное изменение ссылки пользователя",
+        description="Частично заменяет поля объекта данными запроса.",
+        request=CollectionSerializer,
+        responses={
+            200: OpenApiResponse(response=CollectionSerializer, description="Ссылка успешно изменена"),
+        }
+    ),
+    delete=extend_schema(
+        summary="Удаление ссылки пользователя",
+        description="Удаляет ссылку пользователя.",
+        responses={
+            204: OpenApiResponse(description="Ссылка успешно удалена"),
+        }
+    ),
+)
 class LincAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Linc.objects.all()
     serializer_class = LincSerializer
@@ -55,7 +95,7 @@ class LincAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
     ),
     post=extend_schema(
         summary="Добавление коллекции пользователя",
-        description="Добавляет коллекцию пользователя пользователя. Коллекция не может повторяться",
+        description="Добавляет коллекцию пользователя. Коллекция не может повторяться",
         request=CollectionSerializer,
         responses={
             201: OpenApiResponse(response=CollectionSerializer, description="Коллекция успешно добавлена"),

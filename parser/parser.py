@@ -18,6 +18,3 @@ def parsing(url):
     return title_dict
 
 
-# переписать модели, изменить логику создания коллекции (добавлять к коллекции ссылку)
-
-# parsing('https://www.oma.by/vintoverty-fl')

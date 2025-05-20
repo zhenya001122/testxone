@@ -42,6 +42,8 @@ class Collection(models.Model):
     description = models.CharField(max_length=250, blank=True, verbose_name='Краткое описание')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
+    linc = models.ManyToManyField("Linc",
+        related_name="URL",)
     user = models.ForeignKey(CustomUser,
         on_delete=models.CASCADE,
         related_name="collections",
@@ -54,13 +56,11 @@ class Collection(models.Model):
 
 class Linc(models.Model):
     title = models.CharField(max_length=100, verbose_name='Заголовок')
-    description = models.CharField(max_length=250, verbose_name='Краткое описание')
+    description = models.CharField(max_length=250, blank=True, null=True, verbose_name='Краткое описание')
     url = models.URLField(verbose_name='URL')
     image_file = models.ImageField(upload_to='images', default=None, blank=True, null=True)
     image = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=100, default='website')
-    collection = models.ManyToManyField(Collection,
-        related_name="URL",)
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
     user = models.ForeignKey(CustomUser,

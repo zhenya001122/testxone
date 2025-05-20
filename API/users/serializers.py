@@ -9,17 +9,6 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 
 User = get_user_model()
 
-class CollectionSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        slug_field='email',
-        queryset = CustomUser.objects,
-        default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = Collection
-        fields = ('name', 'description', 'user')
-
-
 class LincSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
         slug_field='email',
@@ -29,6 +18,18 @@ class LincSerializer(serializers.ModelSerializer):
     class Meta:
         model = Linc
         fields = ('url', 'user', 'type', 'title', 'description', 'image', 'image_file')
+
+
+class CollectionSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        slug_field='email',
+        queryset = CustomUser.objects,
+        default=serializers.CurrentUserDefault())
+    linc = LincSerializer(read_only=True, many=True).data
+
+    class Meta:
+        model = Collection
+        fields = ('name', 'description', 'user', 'linc')
 
 
 class UserCreateSerializer(UserCreateSerializer):
